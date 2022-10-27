@@ -216,3 +216,6 @@ compile_commands.json
 
 *_qmlcache.qrc
 
+!/install/app.spec
+!/install/tts_server_wrapper.spec
+
