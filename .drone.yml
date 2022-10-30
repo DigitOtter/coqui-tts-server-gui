@@ -1,0 +1,36 @@
+kind: pipeline
+type: exec
+name: win_build
+
+platform:
+  os: windows
+  arch: amd64
+
+clone:
+  depth: 1
+
+trigger:
+  branch:
+  - server-gui-win
+
+steps:
+- name: build
+  commands:
+  - python -m venv venv
+  - .\venv\Scripts\activate
+  - pip install wheel
+  - pip install TTS
+  - pip install .
+  - pip install torch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0
+  
+- name: run_pyinstaller
+  commands:
+  - .\venv\Scripts\activate
+  - pip install pyinstaller
+  - cd install
+  - 'cp C:\Drone\tts-server.exe tts-server.exe'
+  - .\build_win.bat
+
+- name: copy_hack
+  commands:
+  - 'cp install\dist\app.exe C:\Drone\coqui-tts-server-gui.exe'
