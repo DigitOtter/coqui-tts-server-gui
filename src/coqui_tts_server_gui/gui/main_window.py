@@ -39,6 +39,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.connect_button.clicked.connect(self._connect_clicked)
 
+    def start_server(self):
+        return self._connect_clicked()
+
     def _connect_clicked(self):
         model_name = 'tts_models/' + self.model_name_box.currentText()
         

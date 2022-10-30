@@ -18,7 +18,10 @@ if __name__ == '__main__':
     # Main Window
     window = MainWindow()
 
-    icon_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icon.ico')
+    cwd = os.path.dirname(os.path.abspath(__file__))
+
+    # Setup tray icon
+    icon_file = os.path.join(cwd, 'icon.ico')
     icon = QIcon(icon_file)
     tray = QSystemTrayIcon()
     tray.setIcon(icon)
@@ -39,6 +42,9 @@ if __name__ == '__main__':
     # Adding options to the System Tray
     tray.setContextMenu(menu)
 
+    # Start server
+    window.start_server()
+
     # Show window, start Qt event loop
-    #window.show()
+    window.show()
     app.exec()
