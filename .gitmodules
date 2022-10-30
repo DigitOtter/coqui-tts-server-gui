@@ -1,3 +1,4 @@
 [submodule "third-party/coqui-ai-tts"]
 	path = third-party/coqui-ai-tts
-	url = https://github.com/coqui-ai/TTS
+	url = https://github.com/DigitOtter/TTS.git
+	branch = server-gui-win
