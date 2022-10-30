@@ -16,11 +16,13 @@ trigger:
 steps:
 - name: build
   commands:
+  - git submodule update --init --recursive --depth=1
   - python -m venv venv
   - .\venv\Scripts\activate
   - pip install wheel
-  - pip install TTS
-  - pip install .
+  - pip install ./third-party/coqui-ai-tts
+  - pip install -r requirements.txt
+  - pip install -e .
   - pip install torch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0
   
 - name: run_pyinstaller
