@@ -22,5 +22,8 @@ class TtsServerCtrl:
             if vocoder_name:
                 srv_args.extend(['--vocoder_name', vocoder_name])
 
-            self.serv_proc.setProcessChannelMode(QProcess.ProcessChannelMode.ForwardedOutputChannel)
+            self.serv_proc.setProcessChannelMode(QProcess.ProcessChannelMode.ForwardedChannels)
             self.serv_proc.start(tts_server_executable, arguments=srv_args)
+
+            if not tts_server_executable:
+                print("Failed to find TTS server executable")

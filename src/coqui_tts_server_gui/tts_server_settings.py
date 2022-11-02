@@ -25,7 +25,11 @@ class TtsServerSettings(QSettingsManager):
         exec_name = self.config['tts-server']['Executable']
         rel_exec_dir = self.rel_executable_dir
         rel_exec_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_exec_dir) if rel_exec_dir else None
-        return which(exec_name, path=rel_exec_dir)
+        
+        tts_server_exec = which(exec_name, path=rel_exec_dir)
+        if not tts_server_exec and rel_exec_dir:
+            tts_server_exec = which(exec_name, path=None)
+        return tts_server_exec
     
     @property
     def default_tts_model(self):

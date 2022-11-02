@@ -54,4 +54,5 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         port = int(self.port_text.text()) if self.port_text.text() else 5002
         self.tts_server_ctrl._start_server( tts_server_executable=self.settings.tts_server_executable, 
                                             model_name=model_name,
-                                            port=port)
+                                            port=port,
+                                            vocoder_name=vocoder_name)
