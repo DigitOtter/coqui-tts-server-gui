@@ -14,6 +14,14 @@ trigger:
   - server-gui-win
 
 steps:
+- name: build_tts_server
+  commands:
+  - git submodule update --init --recursive --depth=1
+  - cd third-party\coqui-ai-tts
+  - .\install\pip_build_win.bat
+  - .\install\pyinstaller_win.bat
+  - cp dist\tts_server_wrapper.exe ..\..\..\install\tts-server.exe
+
 - name: build
   commands:
   - git submodule update --init --recursive --depth=1
@@ -32,7 +40,6 @@ steps:
   - .\venv\Scripts\activate
   - pip install pyinstaller
   - cd install
-  - 'cp C:\Drone\tts-server.exe tts-server.exe'
   - .\build_win.bat
 
 - name: copy_hack
