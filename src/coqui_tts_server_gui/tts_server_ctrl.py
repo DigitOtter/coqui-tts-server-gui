@@ -33,6 +33,7 @@ class TtsServerCtrl(QObject):
                 self.serv_proc.kill()
                 if not self.serv_proc.waitForFinished(msecs=5*1000):
                     self.serv_proc.terminate()
+                    self.serv_proc.waitForFinished()
 
             srv_args = [
                 '--model_name', model_name,
