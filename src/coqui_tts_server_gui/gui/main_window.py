@@ -117,6 +117,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def _tts_clicked(self) -> None:
         """Send text to TTS server and play audio"""
+        # Don't try to play audio if server is restarting
+        if self.tts_server_ctrl.restarting:
+            return
+
         speaker_id = self.speaker_id_box.currentText() if self.speaker_id_box.count() else None
         wav_bytes, response = self.tts_server_ctrl.get_tts_audio(
             tts_text=self.tts_text_box.toPlainText(),

@@ -19,9 +19,11 @@ class TtsServerCtrl(QObject):
         self.serv_proc.started.connect(self.__proc_started)
         self.serv_proc.errorOccurred.connect(self.__proc_error)
         self.serv_proc.finished.connect(self.__proc_finished)
+        self.restarting = False
     
     def _start_server(self, tts_server_executable, model_name, port=None, vocoder_name=None) -> None:
         """Stops currently running server and respawns a new one with the given arguments"""
+        self.restarting = True
         with self.mutex:
             self.port: int = port if port is not None else self.port
 
@@ -30,14 +32,14 @@ class TtsServerCtrl(QObject):
             QCoreApplication.processEvents()
 
             if self.serv_proc.state() != QProcess.ProcessState.NotRunning:
-                self.serv_proc.kill()
-                if not self.serv_proc.waitForFinished(msecs=5*1000):
-                    self.serv_proc.terminate()
-                    self.serv_proc.waitForFinished()
+                self.__close_proc_nonblocking()
+                self.serv_proc.waitForFinished()
+                time.sleep(2)
 
             srv_args = [
                 '--model_name', model_name,
-                '--port', str(port)
+                '--port', str(port),
+                '--subproc', "True"
             ]
             if vocoder_name:
                 srv_args.extend(['--vocoder_name', vocoder_name])
@@ -52,12 +54,18 @@ class TtsServerCtrl(QObject):
             # Start server
             self.serv_proc.setProcessChannelMode(QProcess.ProcessChannelMode.ForwardedChannels)
             self.serv_proc.start(tts_server_executable, arguments=srv_args)
+            self.serv_proc.waitForStarted()
+
+            self.restarting = False
+
+    def __close_proc_nonblocking(self) -> None:
+        self.__call_server_shutdown_nonblocking()
+        self.serv_proc.terminate()
+        if not self.serv_proc.waitForFinished(msecs=1000):
+            self.serv_proc.kill()
 
     def close_proc(self) -> None:
-        with self.mutex:
-            self.serv_proc.kill()
-            if not self.serv_proc.waitForFinished(msecs=1000):
-                self.serv_proc.terminate()
+        return self.__close_proc_nonblocking()
 
     def _server_url(self) -> str:
         return f'http://localhost:{self.port}'
@@ -90,6 +98,22 @@ class TtsServerCtrl(QObject):
         
         return False
 
+    def __call_server_shutdown_nonblocking(self) -> bool:
+        QCoreApplication.processEvents()
+        if self.serv_proc.state() == QProcess.ProcessState.NotRunning:
+            return None
+        
+        try:
+            response: requests.Response = requests.get(f"{self._server_url()}/api/shutdown")
+        except requests.ConnectionError:
+            return False
+        
+        return response.ok
+
+    def call_server_shutdown(self) -> bool:
+        with self.mutex:
+            return self.__call_server_shutdown_nonblocking()
+
     def get_tts_audio(self, tts_text: str, speaker_id: int=None) -> tuple[bytearray, requests.Response]:
         with self.mutex:
             if self.serv_proc.state() != QProcess.ProcessState.Running:
@@ -99,7 +123,10 @@ class TtsServerCtrl(QObject):
             if speaker_id is not None:
                 params.append(("speaker_id", str(speaker_id)))
             
-            response: requests.Response = requests.get(f"{self._server_url()}/api/tts", params=params)
+            try:
+                response: requests.Response = requests.get(f"{self._server_url()}/api/tts", params=params)
+            except requests.ConnectionError:
+                return (None, None)
 
             return (response.content if response.ok else None, response)
 
