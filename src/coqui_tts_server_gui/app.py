@@ -80,6 +80,8 @@ if __name__ == '__main__':
     # Start server
     window.start_server()
 
+    app.aboutToQuit.connect(window.tts_server_ctrl.close_proc)
+
     # Show window, start Qt event loop
     window.show()
     app.exec()

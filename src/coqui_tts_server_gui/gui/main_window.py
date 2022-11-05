@@ -88,11 +88,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.speaker_id_box.setDisabled(False)
             self.speaker_id_box.addItems(speaker_ids)
 
-    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
-        """Close server process before closing"""
-        self.tts_server_ctrl.close_proc()
-        return super().closeEvent(a0)
-
     def _connect_clicked(self) -> None:
         """Restart server with selected TTS models on selected port. Also updates speaker_ids"""
         self.speaker_id_box.setDisabled(True)
