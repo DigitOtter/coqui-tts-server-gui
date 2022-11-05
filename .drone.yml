@@ -20,7 +20,7 @@ steps:
   - cd third-party\coqui-ai-tts
   - .\install\pip_build_win.bat
   - .\install\pyinstaller_win.bat
-  - cp dist\tts_server_wrapper.exe ..\..\..\install\tts-server.exe
+  - cp install\dist\tts_server_wrapper.exe ..\..\install\tts-server.exe
 
 - name: build
   commands:
