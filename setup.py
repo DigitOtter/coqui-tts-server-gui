@@ -22,8 +22,7 @@ class PyQtBuildPy(build_py):
 
         build_py.run(self)
 
-        
-        
+
 setup(
     install_requires=requirements,
     # entry_points={

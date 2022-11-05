@@ -15,31 +15,32 @@ if __name__ == '__main__':
     app.setApplicationName('coqui_ai_tts_server_gui')
     app.setOrganizationName('digitotter')
 
-    # Main Window
-    window = MainWindow()
-
     cwd = os.path.dirname(os.path.abspath(__file__))
-
-    # Setup tray icon
     icon_file = os.path.join(cwd, 'icon.ico')
     icon = QIcon(icon_file)
+
+    # Setup Main Window
+    window = MainWindow()
+    window.setWindowIcon(icon)
+
+    # Setup tray
     tray = QSystemTrayIcon()
     tray.setIcon(icon)
     tray.setVisible(True)
     tray.activated.connect(window.show)
 
-    # Creating the options
+    # Create tray options
     menu = QMenu()
 
     show_window = QAction("Show Window")
-    show_window.triggered.connect(window.show)
+    show_window.triggered.connect(window.show_window)
     menu.addAction(show_window)
 
     quit = QAction("Quit")
     quit.triggered.connect(app.quit)
     menu.addAction(quit)
     
-    # Adding options to the System Tray
+    # Add options to system tray
     tray.setContextMenu(menu)
 
     # Start server

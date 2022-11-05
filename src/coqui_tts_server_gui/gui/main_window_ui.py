@@ -56,6 +56,12 @@ class Ui_MainWindow(object):
         self.vocoder_name_box = QtWidgets.QComboBox(self.centralwidget)
         self.vocoder_name_box.setObjectName("vocoder_name_box")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.ItemRole.FieldRole, self.vocoder_name_box)
+        self.speaker_id_box = QtWidgets.QComboBox(self.centralwidget)
+        self.speaker_id_box.setObjectName("speaker_id_box")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.ItemRole.FieldRole, self.speaker_id_box)
+        self.label_5 = QtWidgets.QLabel(self.centralwidget)
+        self.label_5.setObjectName("label_5")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.ItemRole.LabelRole, self.label_5)
         self.horizontalLayout_4.addLayout(self.formLayout)
         self.connect_button = QtWidgets.QPushButton(self.centralwidget)
         self.connect_button.setObjectName("connect_button")
@@ -84,13 +90,14 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "CoquiAI TTS Server"))
         self.label.setText(_translate("MainWindow", "Address"))
         self.address_text.setPlaceholderText(_translate("MainWindow", "localhost"))
         self.label_4.setText(_translate("MainWindow", "Port"))
         self.port_text.setPlaceholderText(_translate("MainWindow", "5002"))
         self.label_2.setText(_translate("MainWindow", "Model Name"))
         self.label_3.setText(_translate("MainWindow", "Vocoder Name"))
+        self.label_5.setText(_translate("MainWindow", "Speaker ID"))
         self.connect_button.setText(_translate("MainWindow", "Connect"))
         self.tts_convert_button.setText(_translate("MainWindow", "TTS"))
 
