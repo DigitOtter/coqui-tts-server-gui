@@ -35,7 +35,7 @@ def check_if_running(app_name: str, shared_memory: QSharedMemory) -> bool:
     return is_running
 
 
-if __name__ == '__main__':
+def main():
     app_name: str = 'coqui_ai_tts_server_gui'
 
     app = QtWidgets.QApplication(sys.argv)
@@ -85,3 +85,7 @@ if __name__ == '__main__':
     # Show window, start Qt event loop
     window.show()
     app.exec()
+
+
+if __name__ == "__main__":
+    main()

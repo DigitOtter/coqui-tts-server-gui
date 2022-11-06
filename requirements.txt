@@ -1,4 +1,4 @@
 PyQt6
-pyqtconfig
+pyqtconfig @ git+https://github.com/pythonguis/pyqtconfig.git
 pyaudio
 

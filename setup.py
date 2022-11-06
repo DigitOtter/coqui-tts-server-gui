@@ -15,7 +15,7 @@ requirements = open(os.path.join(cwd, "requirements.txt"), "r").readlines()
 class PyQtBuildPy(build_py):
     def run(self):
         main_window_ui    = os.path.join(cwd, 'forms/main_window.ui')
-        main_window_ui_py = os.path.join(self.build_lib, pkg_name, 'uic/main_window_ui.py')
+        main_window_ui_py = os.path.join(self.build_lib, pkg_name, 'gui/main_window_ui.py')
 
         os.makedirs(os.path.dirname(main_window_ui_py), exist_ok=True)
         subprocess.call([os.sys.executable, '-m', 'PyQt6.uic.pyuic', '-o', main_window_ui_py, '-x', main_window_ui])
@@ -25,8 +25,5 @@ class PyQtBuildPy(build_py):
 
 setup(
     install_requires=requirements,
-    # entry_points={
-    #     'console_scripts': ['coqui-tts-server-gui=exampleproject.example:main']
-    # },
     cmdclass={'build_py': PyQtBuildPy}
 )
