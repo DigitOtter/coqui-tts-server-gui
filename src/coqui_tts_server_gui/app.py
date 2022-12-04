@@ -77,13 +77,14 @@ def main():
     # Add options to system tray
     tray.setContextMenu(menu)
 
+    # Show window
+    window.show()
+
     # Start server
     window.start_server()
-
     app.aboutToQuit.connect(window.tts_server_ctrl.close_proc)
 
-    # Show window, start Qt event loop
-    window.show()
+    # Start Qt event loop
     app.exec()
 
 
