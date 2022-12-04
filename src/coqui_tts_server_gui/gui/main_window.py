@@ -45,7 +45,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Setup TTS server proc interface
         self.tts_server_ctrl  = TtsServerCtrl(self)
         self.tts_server_ctrl.connect_proc_with_status_bar(self.statusbar)
-        self.statusbar.showMessage("FDSAFDASFD")
         
         self.tts_server_audio = TtsServerAudio()
 
@@ -74,6 +73,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def update_tts_speaker_ids(self) -> None:
         """Request available speaker_ids from server"""
+        def_speaker_id = self.settings.get('speaker_id')
+
         self.speaker_id_box.clear()
         self.speaker_id_box.setDisabled(True)
 
@@ -85,8 +86,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if speaker_ids:
             # Workaround to remove speakers containing newlines
             speaker_ids = [ speaker_id for speaker_id in speaker_ids if not "\n" in speaker_id ]
+
             self.speaker_id_box.setDisabled(False)
             self.speaker_id_box.addItems(speaker_ids)
+
+            def_speaker_id_index = self.speaker_id_box.findText(def_speaker_id)
+            if def_speaker_id_index >= 0:
+                self.speaker_id_box.setCurrentIndex(def_speaker_id_index)
 
     def _connect_clicked(self) -> None:
         """Restart server with selected TTS models on selected port. Also updates speaker_ids"""
