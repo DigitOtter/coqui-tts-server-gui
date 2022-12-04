@@ -20,15 +20,19 @@ class TtsServerCtrl(QObject):
         self.serv_proc.errorOccurred.connect(self.__proc_error)
         self.serv_proc.finished.connect(self.__proc_finished)
         self.restarting = False
-    
+        self.__server_status_thread = threading.Thread(target=self.__update_status_bar)
+
     def _start_server(self, tts_server_executable, model_name, port=None, vocoder_name=None) -> None:
         """Stops currently running server and respawns a new one with the given arguments"""
         self.restarting = True
+        if self.__server_status_thread.is_alive():
+            self.__server_status_thread.join()
+
         with self.mutex:
             self.port: int = port if port is not None else self.port
 
             # Emit signal before killing server
-            self.tts_proc_status_message.emit("Starting TTS Server...")
+            self.tts_proc_status_message.emit("Starting TTS Server process...")
             QCoreApplication.processEvents()
 
             if self.serv_proc.state() != QProcess.ProcessState.NotRunning:
@@ -58,6 +62,9 @@ class TtsServerCtrl(QObject):
 
             self.restarting = False
 
+            self.__server_status_thread = threading.Thread(target=self.__update_status_bar)
+            self.__server_status_thread.start()
+
     def __close_proc_nonblocking(self) -> None:
         self.__call_server_shutdown_nonblocking()
         self.serv_proc.terminate()
@@ -72,16 +79,19 @@ class TtsServerCtrl(QObject):
 
     def is_tts_server_running(self) -> bool:
         with self.mutex:
-            QCoreApplication.processEvents()
-            if self.serv_proc.state() == QProcess.ProcessState.NotRunning:
-                return None
-            
-            try:
-                response: requests.Response = requests.get(f"{self._server_url()}/api/is_running")
-            except requests.ConnectionError:
-                return False
-            
-            return response.ok
+            return self.__is_tts_server_running_nonblocking()
+
+    def __is_tts_server_running_nonblocking(self) -> bool:
+        QCoreApplication.processEvents()
+        if self.serv_proc.state() == QProcess.ProcessState.NotRunning:
+            return None
+
+        try:
+            response: requests.Response = requests.get(f"{self._server_url()}/api/is_running")
+        except requests.ConnectionError:
+            return False
+
+        return response.ok
 
     def wait_tts_server_start(self, timeout: float = None) -> bool:
         stop_time: float = time.time() + timeout if timeout else math.inf
@@ -151,10 +161,19 @@ class TtsServerCtrl(QObject):
         self.tts_proc_status_message.connect(status_bar.showMessage)
 
     def __proc_started(self) -> None:
-        self.tts_proc_status_message.emit("TTS server process started")
+        self.tts_proc_status_message.emit("TTS server process starting...")
 
     def __proc_finished(self) -> None:
         self.tts_proc_status_message.emit("TTS server process finished")
 
     def __proc_error(self, error: QProcess.ProcessError) -> None:
         self.tts_proc_status_message.emit(f"TTS server process error: {error}")
+
+    def __update_status_bar(self) -> None:
+        self.tts_proc_status_message.emit("Starting TTS Server...")
+        while not self.restarting:
+            if self.is_tts_server_running():
+                self.tts_proc_status_message.emit("TTS server process started")
+                break
+
+            time.sleep(0.1)
